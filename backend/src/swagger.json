@@ -1,0 +1,194 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API Cadastro de Desenvolvedores By Dioni Dias",
+    "version": "1.0.0"
+  },
+  "servers": [
+    { "url": "http://localhost:3001/api" }
+  ],
+  "paths": {
+    "/niveis": {
+      "get": {
+        "summary": "Listar níveis",
+        "parameters": [
+          {
+            "name": "nome",
+            "in": "query",
+            "description": "Texto para filtrar os níveis pelo nome",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de níveis"
+          },
+          "404": {
+            "description": "Nenhum nível encontrado"
+          }
+        }
+      },
+      "post": {
+        "summary": "Cadastrar novo nível",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nivel": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Nível criado" },
+          "400": { "description": "Erro de validação" }
+        }
+      }
+    },
+    "/niveis/{id}": {
+      "put": {
+        "summary": "Editar nível",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nivel": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Nível editado" },
+          "400": { "description": "Erro de validação" }
+        }
+      },
+      "delete": {
+        "summary": "Remover nível",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Removido com sucesso" },
+          "400": { "description": "Erro: nível com devs associados" }
+        }
+      }
+    },
+    "/desenvolvedores": {
+      "get": {
+        "summary": "Listar desenvolvedores",
+        "parameters": [
+          {
+            "name": "nome",
+            "in": "query",
+            "description": "Filtro de busca pelo nome do desenvolvedor",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Lista de devs" },
+          "404": { "description": "Nenhum desenvolvedor encontrado" }
+        }
+      },
+      "post": {
+        "summary": "Cadastrar desenvolvedor",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nome": { "type": "string" },
+                  "sexo": { "type": "string" },
+                  "data_nascimento": { "type": "string", "format": "date" },
+                  "hobby": { "type": "string" },
+                  "nivel_id": { "type": "integer" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Dev criado" },
+          "400": { "description": "Erro de validação" }
+        }
+      }
+    },
+    "/desenvolvedores/{id}": {
+      "put": {
+        "summary": "Editar desenvolvedor",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nome": { "type": "string" },
+                  "sexo": { "type": "string" },
+                  "data_nascimento": { "type": "string", "format": "date" },
+                  "hobby": { "type": "string" },
+                  "nivel_id": { "type": "integer" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Dev atualizado" },
+          "400": { "description": "Erro de validação" }
+        }
+      },
+      "delete": {
+        "summary": "Remover desenvolvedor",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Removido com sucesso" },
+          "400": { "description": "Erro ao remover" }
+        }
+      }
+    }
+  }
+}
