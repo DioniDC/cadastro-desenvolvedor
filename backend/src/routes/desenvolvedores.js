@@ -27,7 +27,7 @@ router.get('/', async (req, res) => {
   try {
     const devs = await Desenvolvedor.findAll({
       where: whereClause,
-      include: Nivel
+      include: [{ model: Nivel, as: 'nivel' }]
     });
 
     if (!devs.length) {
@@ -41,7 +41,7 @@ router.get('/', async (req, res) => {
       data_nascimento: dev.data_nascimento,
       idade: calcularIdade(dev.data_nascimento),
       hobby: dev.hobby,
-      nivel: dev.Nivel
+      nivel: dev.nivel
     }));
 
     res.json(resultado);
@@ -51,12 +51,27 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/:id', async (req, res) => {
+  const { id } = req.params;
+
+  const dev = await Desenvolvedor.findByPk(id, { include: [{ model: Nivel, as: 'nivel' }] });
+
+  if (!dev) return res.status(404).json({ error: 'Desenvolvedor não encontrado' });
+
+  res.json(dev);
+});
+
 //COLOQUEI AQUI PRA NAO USAR O MESMO NOME SE JA EXISTIR, NAO TINHA NO REQUISITO E O CORRETO SERIA POR CPF MAS JA QUE NAO TEM. 
 router.post('/', async (req, res) => {
   const { nome, sexo, data_nascimento, hobby, nivel_id } = req.body;
 
   if (!nome || !sexo || !data_nascimento || !nivel_id) {
     return res.status(400).json({ error: 'Campos obrigatórios ausentes' });
+  }
+
+  const nivel = await Nivel.findByPk(nivel_id);
+  if (!nivel) {
+    return res.status(400).json({ error: 'Nível informado não existe' });
   }
 
   const devExistente = await Desenvolvedor.findOne({

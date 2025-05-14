@@ -18,6 +18,15 @@ router.get('/', async (req, res) => {
   res.json(niveis);
 });
 
+router.get('/:id', async (req, res) => {
+  const { id } = req.params;
+
+  const nivel = await Nivel.findByPk(id);
+  if (!nivel) return res.status(404).json({ error: 'Nível não encontrado' });
+
+  res.json(nivel);
+});
+
 //SE COLOCASSE  unique: true NO MODEL ERA PRA NAO DEIXAR GRAVAR NOME QUE JA EXISTE MAS NAO DEU
 //DEIXAR COMENTADO SE DER TEMPO VER O QUE PODE SER E FAZER UM NOVO PESQUISANDO ANTES
 

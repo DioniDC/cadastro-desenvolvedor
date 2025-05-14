@@ -27,7 +27,9 @@ export default function LevelsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const debounceTimeoutRef = useRef();
   const [showModal, setShowModal] = useState(false);
-
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [levelIdToDelete, setLevelIdToDelete] = useState(null);
+  
   const loadLevels = async (search = '') => {
     try {
       const res = await getLevels(search);
@@ -61,17 +63,23 @@ export default function LevelsPage() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Tem certeza que deseja excluir este nível?')) return;
+  const askDelete = (id) => {
+    setLevelIdToDelete(id);
+    setShowConfirmDelete(true);
+  };
 
+  const confirmDelete = async () => {
     try {
-      await deleteLevel(id);
+      await deleteLevel(levelIdToDelete);
       setSuccess('Nível deletado com sucesso');
       setTimeout(() => setSuccess(''), 3000);
       loadLevels();
     } catch (err) {
       setError(err?.response?.data?.error || 'Erro ao excluir nível');
       setTimeout(() => setError(''), 3000);
+    } finally {
+      setShowConfirmDelete(false);
+      setLevelIdToDelete(null);
     }
   };
 
@@ -190,7 +198,7 @@ export default function LevelsPage() {
                   <Button
                     variant="outline-danger"
                     size="sm"
-                    onClick={() => handleDelete(nivel.id)}
+                    onClick={() => askDelete(nivel.id)}
                   >
                     Excluir
                   </Button>
@@ -200,6 +208,20 @@ export default function LevelsPage() {
           </ListGroup.Item>
         ))}
       </ListGroup>
+      <Modal show={showConfirmDelete} onHide={() => setShowConfirmDelete(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirmar Exclusão</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Tem certeza que deseja excluir este nível?</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowConfirmDelete(false)}>
+            Cancelar
+          </Button>
+          <Button variant="danger" onClick={confirmDelete}>
+            Excluir
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 }

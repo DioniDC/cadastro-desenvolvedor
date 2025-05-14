@@ -10,7 +10,14 @@ const sequelize = new Sequelize({
 const Nivel = require('./nivel')(sequelize);
 const Desenvolvedor = require('./desenvolvedor')(sequelize);
 
-Nivel.hasMany(Desenvolvedor, { foreignKey: 'nivel_id' });
-Desenvolvedor.belongsTo(Nivel, { foreignKey: 'nivel_id' });
+Nivel.hasMany(Desenvolvedor, {
+  foreignKey: 'nivel_id',
+  as: 'desenvolvedores'
+});
+
+Desenvolvedor.belongsTo(Nivel, {
+  foreignKey: 'nivel_id',
+  as: 'nivel'
+});
 
 module.exports = { sequelize, Nivel, Desenvolvedor };

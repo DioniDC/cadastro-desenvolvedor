@@ -23,6 +23,8 @@ export default function DevsPage() {
   const [showForm, setShowForm] = useState(false);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [idToDelete, setIdToDelete] = useState(null);
 
   const loadDevs = useCallback(async () => {
     try {
@@ -114,16 +116,23 @@ export default function DevsPage() {
     setShowForm(true);
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Deseja excluir este dev?')) return;
+  const askDelete = (id) => {
+    setIdToDelete(id);
+    setShowConfirm(true);
+  };
+
+  const confirmDelete = async () => {
     try {
-      await deleteDev(id);
+      await deleteDev(idToDelete);
       setSuccess('Desenvolvedor excluído com sucesso');
       setTimeout(() => setSuccess(''), 3000);
-      loadDevs();
+      await loadDevs();
     } catch (err) {
       setError(err?.response?.data?.error || 'Erro ao excluir desenvolvedor');
       setTimeout(() => setError(''), 3000);
+    } finally {
+      setShowConfirm(false);
+      setIdToDelete(null);
     }
   };
 
@@ -144,7 +153,16 @@ export default function DevsPage() {
             />
           </Col>
           <Col md="auto">
-            <Button variant="dark" onClick={() => setShowForm(true)}>Incluir novo</Button>
+            <Button
+              variant="dark"
+              onClick={() => {
+                setShowForm(true);
+                setEditingId(null); // <-- limpa edição
+                setFormData({ nome: '', nivel_id: '', sexo: 'M', data_nascimento: '', hobby: '' }); // <-- limpa formulário
+              }}
+            >
+              Incluir novo
+            </Button>
           </Col>
         </Row>
       </Form>
@@ -232,7 +250,8 @@ export default function DevsPage() {
                 <Button
                   size="sm"
                   variant="outline-danger"
-                  onClick={() => handleDelete(dev.id)}
+                  onClick={() => askDelete(dev.id)}
+                  type="button"
                 >
                   Excluir
                 </Button>
@@ -241,6 +260,20 @@ export default function DevsPage() {
           ))}
         </tbody>
       </Table>
+      <Modal show={showConfirm} onHide={() => setShowConfirm(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirmar Exclusão</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Tem certeza que deseja excluir este desenvolvedor?</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowConfirm(false)}>
+            Cancelar
+          </Button>
+          <Button variant="danger" onClick={confirmDelete}>
+            Excluir
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 }

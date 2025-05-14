@@ -79,6 +79,21 @@
         "responses": {
           "200": { "description": "Nível editado" },
           "400": { "description": "Erro de validação" }
+        },  
+        "get": {
+          "summary": "Buscar nível por ID",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "schema": { "type": "integer" }
+            }
+          ],
+          "responses": {
+            "200": { "description": "Nível encontrado" },
+            "404": { "description": "Nível não encontrado" }
+          }
         }
       },
       "delete": {
